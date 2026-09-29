@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS channels(id TEXT PRIMARY KEY,handle TEXT UNIQUE NOT NULL,focus TEXT NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS ideas(id TEXT PRIMARY KEY,channel_id TEXT NOT NULL REFERENCES channels(id),title TEXT NOT NULL,description TEXT NOT NULL,lifecycle_state TEXT NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS ix_ideas_channel ON ideas(channel_id,created_at);
+CREATE TABLE IF NOT EXISTS projects(id TEXT PRIMARY KEY,channel_id TEXT NOT NULL REFERENCES channels(id),idea_id TEXT UNIQUE NOT NULL REFERENCES ideas(id),title TEXT NOT NULL,notes TEXT NOT NULL,state TEXT NOT NULL,revision INTEGER NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS ix_projects_channel ON projects(channel_id,created_at);
+CREATE TABLE IF NOT EXISTS project_versions(id TEXT PRIMARY KEY,project_id TEXT NOT NULL REFERENCES projects(id),revision INTEGER NOT NULL,snapshot_json TEXT NOT NULL,created_at TEXT NOT NULL,UNIQUE(project_id,revision));
+CREATE TABLE IF NOT EXISTS "references"(id TEXT PRIMARY KEY,channel_id TEXT NOT NULL REFERENCES channels(id),project_id TEXT NOT NULL REFERENCES projects(id),title TEXT NOT NULL,url TEXT NOT NULL,notes TEXT NOT NULL,created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS tasks(id TEXT PRIMARY KEY,project_id TEXT NOT NULL REFERENCES projects(id),title TEXT NOT NULL,done INTEGER NOT NULL DEFAULT 0 CHECK(done IN (0,1)),created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS audit_events(id TEXT PRIMARY KEY,action TEXT NOT NULL,entity TEXT NOT NULL,entity_id TEXT NOT NULL,before_json TEXT,after_json TEXT,created_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS backups(id TEXT PRIMARY KEY,filename TEXT NOT NULL,created_at TEXT NOT NULL);

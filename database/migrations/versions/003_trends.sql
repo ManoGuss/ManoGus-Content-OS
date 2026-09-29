@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS trend_series(id TEXT PRIMARY KEY,term TEXT NOT NULL,region TEXT NOT NULL,timeframe TEXT NOT NULL,source_ref TEXT NOT NULL,normalization_group TEXT NOT NULL,method TEXT NOT NULL,sha256 TEXT NOT NULL UNIQUE,imported_at TEXT NOT NULL,point_count INTEGER NOT NULL,scale_note TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS ix_trend_series_filter ON trend_series(term,region,timeframe);
+CREATE TABLE IF NOT EXISTS trend_points(id TEXT PRIMARY KEY,series_id TEXT NOT NULL REFERENCES trend_series(id) ON DELETE CASCADE,period_start TEXT NOT NULL,period_end TEXT NOT NULL,interest_index INTEGER,UNIQUE(series_id,period_start,period_end));

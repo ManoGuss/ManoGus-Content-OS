@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS scripts(id TEXT PRIMARY KEY,project_id TEXT NOT NULL UNIQUE REFERENCES projects(id),channel_id TEXT NOT NULL REFERENCES channels(id),current_version_id TEXT,revision INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS script_versions(id TEXT PRIMARY KEY,script_id TEXT NOT NULL REFERENCES scripts(id),revision INTEGER NOT NULL,parent_version_id TEXT REFERENCES script_versions(id),state TEXT NOT NULL,content_json TEXT NOT NULL,input_hash TEXT NOT NULL,origin TEXT NOT NULL,model TEXT,source_json TEXT NOT NULL DEFAULT '{}',created_at TEXT NOT NULL,UNIQUE(script_id,revision));
+CREATE INDEX IF NOT EXISTS ix_script_versions_script ON script_versions(script_id,revision DESC);
